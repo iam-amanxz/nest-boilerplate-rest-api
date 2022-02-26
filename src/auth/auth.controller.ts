@@ -10,7 +10,7 @@ import { ApiTags, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { GetCurrentUser, GetCurrentUserId, Public } from './decorators';
-import { AuthDto } from './dto';
+import { LoginDto, RegisterDto } from './dto';
 import { RtGuard } from './guards';
 import { Tokens } from './types';
 
@@ -25,7 +25,7 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @HttpCode(HttpStatus.OK)
-  async login(@Body() dto: AuthDto) {
+  async login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
 
@@ -35,7 +35,7 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 409, description: 'Conflict' })
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() dto: AuthDto): Promise<Tokens> {
+  async register(@Body() dto: RegisterDto): Promise<Tokens> {
     return this.authService.register(dto);
   }
 

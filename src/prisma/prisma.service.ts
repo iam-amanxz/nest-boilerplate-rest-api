@@ -31,6 +31,6 @@ export class PrismaService
     if (process.env.NODE_ENV === 'production') return;
 
     // teardown logic
-    return Promise.all([this.user.deleteMany()]);
+    return this.$transaction([this.user.deleteMany()]);
   }
 }
