@@ -1,9 +1,8 @@
 {
-  "name": "nest-auth",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
+  "name": "nest-boilerplate-rest-api",
+  "version": "1.0.0",
+  "description": "Boilerplate CRUD REST API with NestJS",
+  "author": "Husnul Aman <iam.amanxz@gmail.com>",
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -20,16 +19,15 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e1": "dotenv -e .env.test -- jest --watch --no-cache --config ./test/jest-e2e.json",
     "test:e2e": "jest --watch --no-cache --config ./test/jest-e2e.json",
     "=======db=========": "==========================",
     "db:dev:rm": "docker-compose rm -sfv dev-db",
     "db:dev:up": "docker-compose up -d dev-db",
     "db:test:rm": "docker-compose rm -sfv test-db",
     "db:test:up": "docker-compose up -d test-db",
-    "db:dev:deploy": "prisma migrate deploy",
-    "db:test:deploy": "dotenv -e .env.test -- prisma migrate deploy",
-    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 1 && npm run db:dev:deploy"
+    "db:deploy": "prisma migrate deploy",
+    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 1 && npm run db:deploy",
+    "db:test:restart": "npm run db:test:rm && npm run db:test:up && sleep 1 && npm run db:deploy"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -43,7 +41,6 @@
     "argon2": "^0.28.4",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
-    "dotenv": "^16.0.0",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "prisma": "^3.10.0",
