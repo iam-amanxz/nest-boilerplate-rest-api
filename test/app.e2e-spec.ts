@@ -4,6 +4,7 @@ import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
 import { LoginDto, RegisterDto } from '../src/auth/dto';
+import { CreateResourceDto, UpdateResourceDto } from 'src/resources/dto';
 
 describe('app e2e', () => {
   let app: INestApplication;
@@ -198,6 +199,173 @@ describe('app e2e', () => {
           .delete('/users/me')
           .withHeaders({
             Authorization: 'Bearer $S{accessToken}',
+          })
+          .expectStatus(204);
+      });
+    });
+  });
+
+  describe('Resources', () => {
+    beforeAll(() => {
+      const registerDto1: RegisterDto = {
+        email: 'user3@mail.com',
+        password: '123',
+        name: 'Anne',
+      };
+      const registerDto2: RegisterDto = {
+        email: 'user4@mail.com',
+        password: '123',
+        name: 'Kyle',
+      };
+
+      return Promise.all([
+        pactum
+          .spec()
+          .post('/auth/register')
+          .withBody(registerDto1)
+          .stores('accessToken1', 'accessToken'),
+        pactum
+          .spec()
+          .post('/auth/register')
+          .withBody(registerDto2)
+          .stores('accessToken2', 'accessToken'),
+      ]);
+    });
+
+    describe('Create', () => {
+      const dto: CreateResourceDto = {
+        name: 'Resource 1',
+      };
+      it('should create a resource', () => {
+        return pactum
+          .spec()
+          .post('/resources')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken1}',
+          })
+          .withBody(dto)
+          .expectStatus(201)
+          .stores('resourceId', 'id');
+      });
+    });
+
+    describe('Get one', () => {
+      it("should return not found if request user id and resource owner id don't match", () => {
+        return pactum
+          .spec()
+          .get('/resources/$S{resourceId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken2}',
+          })
+          .expectStatus(404);
+      });
+      it('should return not found if resource id is not available', () => {
+        return pactum
+          .spec()
+          .get('/resources/696')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken1}',
+          })
+          .expectStatus(404);
+      });
+      it('should return resource with specified id', () => {
+        return pactum
+          .spec()
+          .get('/resources/$S{resourceId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken1}',
+          })
+          .expectStatus(200);
+      });
+    });
+
+    describe('Get all', () => {
+      it('should return empty for user2', () => {
+        return pactum
+          .spec()
+          .get('/resources')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken2}',
+          })
+          .expectStatus(200)
+          .expectJsonLength(0);
+      });
+      it('should return 1 for user1', () => {
+        return pactum
+          .spec()
+          .get('/resources')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken1}',
+          })
+          .expectStatus(200)
+          .expectJsonLength(1);
+      });
+    });
+
+    describe('Update one', () => {
+      const dto: UpdateResourceDto = {
+        name: 'Resource 1 updated',
+      };
+      it("should return not found if request user id and resource owner id don't match", () => {
+        return pactum
+          .spec()
+          .patch('/resources/$S{resourceId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken2}',
+          })
+          .withBody(dto)
+          .expectStatus(404);
+      });
+      it('should return not found if resource id is not available', () => {
+        return pactum
+          .spec()
+          .patch('/resources/696')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken1}',
+          })
+          .withBody(dto)
+          .expectStatus(404);
+      });
+      it('should update resource with specified id', () => {
+        return pactum
+          .spec()
+          .patch('/resources/$S{resourceId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken1}',
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectJsonLike({
+            ...dto,
+          });
+      });
+    });
+
+    describe('Delete one', () => {
+      it("should return not found if request user id and resource owner id don't match", () => {
+        return pactum
+          .spec()
+          .delete('/resources/$S{resourceId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken2}',
+          })
+          .expectStatus(404);
+      });
+      it('should return not found if resource id is not available', () => {
+        return pactum
+          .spec()
+          .delete('/resources/696')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken1}',
+          })
+          .expectStatus(404);
+      });
+      it('should delete resource with specified id', () => {
+        return pactum
+          .spec()
+          .delete('/resources/$S{resourceId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{accessToken1}',
           })
           .expectStatus(204);
       });

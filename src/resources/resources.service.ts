@@ -33,12 +33,16 @@ export class ResourceService {
     userId: number,
     resourceId: number,
   ): Promise<Resource> {
-    return this.prisma.resource.findFirst({
+    const resource = await this.prisma.resource.findFirst({
       where: {
-        id: resourceId,
         ownerId: userId,
+        id: resourceId,
       },
     });
+
+    if (!resource) throw new NotFoundException('Resource not found');
+
+    return resource;
   }
 
   async updateResource(
