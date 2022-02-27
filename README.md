@@ -27,3 +27,10 @@ npm run test:e2e
 ```
 http://localhost:3000/docs
 ```
+
+## Features
+- JWT authentication with refresh tokens
+- Full CRUD API
+- E2E testing
+- Prisma integration with PostgreSQL
+- Dockerized services
