@@ -11,13 +11,25 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  email     String     @unique
   name      String?
   hash      String
   hashedRt  String?
+  Resources Resource[]
 
   @@map("users")
+}
+
+model Resource {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  ownerId   Int
+  owner     User     @relation(fields: [ownerId], references: [id])
+
+  @@map("resources")
 }

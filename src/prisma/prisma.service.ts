@@ -1,12 +1,9 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { INestApplication, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class PrismaService
-  extends PrismaClient
-  implements OnModuleDestroy, OnModuleInit
-{
+export class PrismaService extends PrismaClient {
   constructor(config: ConfigService) {
     const url = config.get<string>('DATABASE_URL');
 
@@ -19,18 +16,19 @@ export class PrismaService
     });
   }
 
-  async onModuleInit() {
-    await this.$connect();
-  }
-
-  async onModuleDestroy() {
-    await this.$disconnect();
-  }
-
   async cleanDatabase() {
     if (process.env.NODE_ENV === 'production') return;
 
     // teardown logic
-    return this.$transaction([this.user.deleteMany()]);
+    return this.$transaction([
+      this.resource.deleteMany(),
+      this.user.deleteMany(),
+    ]);
+  }
+
+  async enableShutdownHooks(app: INestApplication) {
+    this.$on('beforeExit', async () => {
+      await app.close();
+    });
   }
 }
