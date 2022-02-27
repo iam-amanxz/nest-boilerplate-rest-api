@@ -4,6 +4,15 @@
   "description": "Boilerplate CRUD REST API with NestJS",
   "author": "Husnul Aman <iam.amanxz@gmail.com>",
   "license": "UNLICENSED",
+  "keywords": [
+    "nestjs",
+    "rest",
+    "api",
+    "crud",
+    "postgres",
+    "prisma",
+    "jwt"
+  ],
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
